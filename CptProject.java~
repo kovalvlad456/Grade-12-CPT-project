@@ -1,0 +1,35 @@
+/**
+ * Auto Generated Java Class.
+ */
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.*;
+import java.util.Arrays;
+public class CptProject {
+  static JButton[] addButton;
+  static JButton[] deleteButton;
+  static JButton[] valueButton;
+  static JLabel[] lblItem;
+  static JLabel[] lblItemQ;
+  static JLabel[] lblItemP;
+  static JLabel[] lblHeadings;
+  static JTextField[] txtQChange;
+  static int[] itemQ = new int[6];
+  static double[] itemP = new double[6];
+  String [] itemName = new String[6];
+  String [] fields;
+  static String name = " ";
+  static int quantity = 0;
+  static double price = 0;
+  BufferedReader in = null;
+  String line = "Item, 10, 38.5";
+  File f = new File("Inventory2.txt");
+  
+  public
+  
+  
+}

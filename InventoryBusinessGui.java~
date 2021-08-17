@@ -1,0 +1,248 @@
+/**
+ * Auto Generated Java Class.
+ */
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class InventoryBusinessGui implements ActionListener {
+  JFrame frame, frameTwo;
+  JPanel contentPane, contentPaneTwo;
+  static JButton closeButton;
+  static JButton setupInvButton;
+  static JButton totalValueButton;
+  static JButton lowInventoryButton;
+  static JButton highInventoryButton;
+  static JButton saveButton;
+  static JButton updatePriceButton;
+  static JButton[] addButton;
+  static JButton[] deleteButton;
+  static JButton[] valueButton;
+  static JLabel[] lblItem;
+  static JLabel[] lblItemQ;
+  static JLabel[] lblItemP;
+  static JLabel[] lblHeadings;
+  static JTextField[] txtQChange;
+  static int[] itemQ = new int[6];
+  static double[] itemP = new double[6];
+  String [] itemName = new String[6];
+  String [] fields;
+  static String name = " ";
+  static int quantity = 0;
+  static double price = 0;
+  BufferedReader in = null;
+  String line = "Item, 10, 38.5";
+  File f = new File("Inventory2.txt");
+  
+  public InventoryBusinessGui(){
+    try{
+      in = new BufferedReader(new FileReader(f));
+      System.out.println("File opening");
+    } catch (FileNotFoundException e) {
+      System.out.println("Problem opening file");
+    }
+    
+    do {
+      try{
+        line = in.readLine();
+      } catch (IOException e) {
+        System.out.println("Problem reading data from file");
+      }
+     
+      // read data from records - data all on 1 line, 6 records with 3 fields per record
+      if (line!=null){
+        for (int i=0;i<6;i++){  
+          fields=line.split(",");
+          if (i==0){
+            itemName[i]=fields[i];
+            itemQ[i]=Integer.parseInt(fields[i+1]);
+            itemP[i]=Double.parseDouble(fields[i+2]);
+          }else{
+            itemName[i]=fields[i+(i*2)];
+            itemQ[i]=Integer.parseInt(fields[(i+(i*2))+1]);
+            itemP[i]=Double.parseDouble(fields[(i+(i*2))+2]);          
+          }
+        }
+      }
+    }while (line!=null);
+    
+    try {
+      in.close();
+      System.out.println("Closing File");
+    } catch (IOException e) {
+      System.out.println("Problem Closing " + e);
+    }
+   
+    String[] headings = {"Item", "Quantity", "Price per unit", " ", " ", " ", " "};
+    
+    frame = new JFrame("Business Supply Inventory");
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    closeButton = new JButton("Close");
+    closeButton.addActionListener(this);
+    
+    frameTwo = new JFrame("Invetory Setup");
+    frameTwo.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    closeButton = new JButton("Close");
+    closeButton.addActionListener(this);
+    contentPaneTwo = new JPanel();
+    contentPaneTwo.setLayout(new GridLayout(0,1,10,5));
+    contentPaneTwo.add(closeButton);
+    frameTwo.setContentPane(contentPaneTwo);
+    
+    contentPane = new JPanel();
+    contentPane.setLayout(new GridLayout(itemName.length+2,6,10,5));
+    contentPane.setBorder(BorderFactory.createEmptyBorder(12,12,12,12));
+    
+    // Create an array of GUI elements
+    addButton = new JButton[itemName.length];
+    deleteButton = new JButton[itemName.length];
+    valueButton = new JButton[itemName.length];
+    txtQChange = new JTextField[itemName.length];
+    lblItem = new JLabel[itemName.length];
+    lblItemQ = new JLabel[itemName.length];
+    lblItemP = new JLabel[itemName.length];
+    lblHeadings = new JLabel[headings.length];
+    
+    totalValueButton = new JButton("Total inventory value");
+    lowInventoryButton = new JButton("Low Inventory");
+    highInventoryButton = new JButton("High Inventory");
+    saveButton = new JButton("Save");
+    updatePriceButton = new JButton("Update Price");
+    
+    for (int i = 0; i < headings.length; i++){
+      lblHeadings[i] = new JLabel(headings[i]);
+      contentPane.add(lblHeadings[i]);
+    }
+    for (int i = 0; i < itemName.length; i++){
+      lblItem[i] = new JLabel(itemName[i]);
+      lblItemQ[i] = new JLabel(String.valueOf(itemQ[i]));
+      lblItemP[i] = new JLabel(String.valueOf(itemP[i]));
+      txtQChange[i] = new JTextField();
+      addButton[i] = new JButton("Add");
+      deleteButton[i] = new JButton("Delete");
+      valueButton[i] = new JButton("Value");
+      addButton[i].addActionListener(this);
+      deleteButton[i].addActionListener(this);
+      valueButton[i].addActionListener(this);
+      contentPane.add(lblItem[i]);
+      contentPane.add(lblItemQ[i]);
+      contentPane.add(lblItemP[i]);
+      contentPane.add(txtQChange[i]);
+      contentPane.add(addButton[i]);
+      contentPane.add(deleteButton[i]);
+      contentPane.add(valueButton[i]);
+    }
+    saveButton.addActionListener(this);
+    updatePriceButton.addActionListener(this);
+    lowInventoryButton.addActionListener(this);
+    highInventoryButton.addActionListener(this);
+    totalValueButton.addActionListener(this);
+    contentPane.add(lowInventoryButton);
+    contentPane.add(totalValueButton);
+    contentPane.add(highInventoryButton);
+    contentPane.add(saveButton);
+    contentPane.add(updatePriceButton);
+    
+    frame.setContentPane(contentPane);
+    frame.setSize(900,450);
+    frame.setVisible(true);
+    
+    
+  }
+  
+  
+  
+  public void actionPerformed(ActionEvent e) {
+    for (int i = 0; i < itemQ.length; i++){
+        if (e.getSource()== addButton[i]){
+          addInventory(i);
+        }else if (e.getSource()== deleteButton[i]){
+          deleteInventory(i);
+        }else if(e.getSource()==valueButton[i]){
+          valueInventory(i);
+        }
+    }
+    if (e.getSource()==totalValueButton){
+      totalValueInventory();
+    }
+   
+      
+    if (e.getSource()==saveButton){
+      int a = JOptionPane.showConfirmDialog(null, "Confirm inventory overwrite?");
+      if(a==JOptionPane.YES_OPTION){
+        updateInventory();
+      }
+    }
+    if (e.getSource()==updatePriceButton){
+      String item = JOptionPane.showInputDialog(null, "Enter item that you want to change price?");
+      JOptionPane.showMessageDialog(null, item + " is an excellent choice.");
+    }
+    if (e.getSource()== closeButton){
+      frameTwo.setVisible(false);
+      frame.setVisible(true);
+    }
+    if (e.getSource()== closeButton){
+      frameTwo.setVisible(false);
+      frame.setVisible(true);
+    }
+    if (e.getSource()==saveButton){
+      JOptionPane.showMessageDialog(null, "Inventory setup feature is a feature we are still working on.");
+    }
+      
+  }
+  public void addInventory(int k){
+    int quantity = 0;
+    quantity = Integer.parseInt(txtQChange[k].getText());
+    itemQ[k] = itemQ[k]+quantity;
+    lblItemQ[k].setText(String.valueOf(itemQ[k]));
+  }
+  public void deleteInventory(int k){
+    int quantity = 0;
+    quantity = Integer.parseInt(txtQChange[k].getText());
+    itemQ[k] = itemQ[k]-quantity;
+    lblItemQ[k].setText(String.valueOf(itemQ[k]));
+  }
+  public void valueInventory(int j){
+    int quantity = 0;
+    double value = 0;
+    quantity = itemQ[j]; 
+    value = (quantity * itemP[j]);
+    JOptionPane.showMessageDialog(frame, "The value is: " + value);
+  }
+  public void totalValueInventory(){
+    double totalValue = 0;
+    for (int i = 0; i < itemQ.length; i++){
+      for (int k = 0; k < itemP.length; k++){
+        totalValue = (itemQ[i] * itemP[k]);
+        JOptionPane.showMessageDialog(frame, "The total value is: " + totalValue);
+      }
+    }
+  }
+  public void updateInventory() {
+    PrintWriter out = null;
+    String line = "";
+    File source = new File("Inventory2.txt");
+    try{
+      out = new PrintWriter(new BufferedWriter(new FileWriter(source, false)), true);
+      System.out.println("File Opening");
+    } catch (IOException e){
+      System.out.println("Problem opening file");
+    }
+    for (int i=0; i<itemQ.length; i++){
+      name = itemName[i];
+      quantity = itemQ[i];
+      price = itemP[i];
+      line = name + "," + quantity + "," + price + ",";
+      out.print(line);
+    }
+    out.close();
+  }
+  public static void main(String[] args) { 
+    new InventoryBusinessGui();
+  }
+  
+  
+}
